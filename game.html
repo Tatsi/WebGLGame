@@ -10,8 +10,74 @@
 	</head>
 	<body>
 		<script src="js/three.js"></script>
+		<script src='js/threextext/threex.text.js'></script>
+		<script src="js/threextext/fonts/droid/droid_serif_regular.typeface.js"></script>
+		<script src='js/threexloop/threex.loop.js'></script>
+		<script src='js/threexkeyboardstate/threex.keyboardstate.js'></script>
 		<script>
-			// Our Javascript will go here.
+			// Init scene
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			// Add a cube
+			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			var cube = new THREE.Mesh( geometry, material );
+			scene.add( cube );
+
+			// Add keyboard state object
+			var keyboard = new THREEx.KeyboardState();
+
+			// Add text
+			//var text = new THREEx.Text('THREEx');
+			// scene.add(text);
+
+			// Create game loop that is executed 50 times per second
+			var gameloop = new THREEx.PhysicsLoop(50)
+			function handleInput(delta){
+				//console.log('Handling input');
+				if (keyboard.pressed("left"))
+				{
+					console.log('Left pressed!');
+					cube.rotation.x += 0.1;
+				}
+				if (keyboard.pressed("right"))
+				{
+					console.log('Right pressed!');
+					cube.rotation.x -= 0.1;
+				}
+			};
+			function alterState(delta){
+				//console.log('Altering game state');
+			};
+
+			gameloop.add(handleInput);
+			gameloop.add(alterState);
+
+			// Create loop that is executed after each render
+			var renderingloop = new THREEx.RenderingLoop();
+			function function2(delta){
+				//console.log('Rendering loop call');
+			};
+			renderingloop.add(function2);
+
+			camera.position.z = 5;
+
+			// Render loop
+			function render() {
+				requestAnimationFrame( render );
+				renderer.render( scene, camera );
+			}
+			
+			// Start loops
+			gameloop.start();
+			renderingloop.start();
+
+			render();
 		</script>
 	</body>
 </html>
