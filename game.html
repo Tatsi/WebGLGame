@@ -11,27 +11,34 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script src='js/threextext/threex.text.js'></script>
-		<script src="js/threextext/fonts/droid/droid_serif_regular.typeface.js"></script>
+		<!-- script src="js/threextext/fonts/<droi></droi>d/droid_serif_regular.typeface.js"></script -->
 		<script src='js/threexloop/threex.loop.js'></script>
 		<script src='js/threexkeyboardstate/threex.keyboardstate.js'></script>
 		<script>
 			// Init scene
 			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
+			var camera = new THREE.PerspectiveCamera( 75, 9 / 16, 0.1, 1000 );
+			// var camera = new THREE.PerspectiveCamera( 75, 0.5, 0.1, 1000 );
 			var renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setSize( window.innerHeight/16*9, window.innerHeight );
+			//renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 
 			// Add a cube
 			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
 			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 			var cube = new THREE.Mesh( geometry, material );
+			cube.position.y = -3;
 			scene.add( cube );
 
 			// Add keyboard state object
 			var keyboard = new THREEx.KeyboardState();
 
+			// Add game related variables
+			var action = "";
+			var moveSpeedX = 1.0;
+			var rowIndex = 0;
+			var playerPosition = 3; // Between 0 and 5
 			// Add text
 			//var text = new THREEx.Text('THREEx');
 			// scene.add(text);
@@ -40,19 +47,38 @@
 			var gameloop = new THREEx.PhysicsLoop(50)
 			function handleInput(delta){
 				//console.log('Handling input');
-				if (keyboard.pressed("left"))
+				if (action.localeCompare("") == 0) // Is equal to
 				{
-					console.log('Left pressed!');
-					cube.rotation.x += 0.1;
-				}
-				if (keyboard.pressed("right"))
-				{
-					console.log('Right pressed!');
-					cube.rotation.x -= 0.1;
+					console.log('Handling input');
+					if (keyboard.pressed("left"))
+					{
+						action = "JumpLeft";
+						console.log('Left pressed!');
+						//cube.rotation.x += 0.1;
+					}
+					if (keyboard.pressed("right"))
+					{
+						action = "JumpRight";
+						console.log('Right pressed!');
+						//cube.rotation.x -= 0.1;
+					}
 				}
 			};
 			function alterState(delta){
 				//console.log('Altering game state');
+				if (action.localeCompare("") != 0) // Not equal to
+				{
+					if (action.localeCompare("JumpLeft") == 0)
+					{
+						cube.position.x = cube.position.x - moveSpeedX;
+						action = "";
+					}
+					else if (action.localeCompare("JumpRight") == 0)
+					{
+						cube.position.x = cube.position.x + moveSpeedX;
+						action = "";
+					}
+				}
 			};
 
 			gameloop.add(handleInput);
