@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset=utf-8>
-		<title>My first Three.js app</title>
+		<title>WebGL Test Game</title>
 		<style>
 			body { margin: 0; }
 			canvas { width: 100%; height: 100% }
@@ -35,29 +35,59 @@
 			// Add keyboard state object
 			var keyboard = new THREEx.KeyboardState();
 
+			// Add game related constants
+			var blockArrayWidth = 6;
+			var blockArrayLength = 10;
+			var jumpDuration = 10;
+			var jump_height = 1.2;
+			var blockDistance = 0.5; // The distance between cells (=logs) in 3D scene
+			var spawnLogsInterval = 1.0;
+			var nextSpawnIn = spawnLogsInterval;
+			const BLOCK_ARRAY_LAST_INDEX = blockArrayWidth - 1;
+
 			// Add game related variables
 			var action = "";
 			var playerPositionIndexX = 3; // Between 0 and 5
 			var playerPositionIndexY = 0; // Between 0 and 9
 			var actionDuration = 0;
 			var flowSpeed = 0.002;
-			
+			var lastRouteBlockIndex = playerPositionIndexX;
+			var blocks = new Array(blockArrayLength);
 
-			// Add game related constants
-			var blockArrayWidth = 6;
-			var blockArrayLegth = 10;
-			var jumpDuration = 10;
-			var jump_height = 1.2;
-			var blockDistance = 0.5; // The distance between cells (=logs) in 3D scene
-			var spawnLogsInterval = 1.0;
-			var nextSpawnIn = spawnLogsInterval;
+			blocks[0] = [false, false, false, false, false, false];
+			blocks[0][playerPositionIndexX] = true;
+			console.log(blocks[0]);
+			for (var i = 1; i < blockArrayLength; i++) {
+				blocks[i] = createRow();
+				console.log(blocks[i]);
+			}
 
 			// Add text
 			//var text = new THREEx.Text('THREEx');
 			// scene.add(text);
 
-			// Create game loop that is executed 50 times per second
-			var gameloop = new THREEx.PhysicsLoop(50)
+			function createRow(){
+				newRow = [false, false, false, false, false, false];
+				newRouteIndex = lastRouteBlockIndex + (2 * Math.round(Math.random()) - 1);
+				if (newRouteIndex > BLOCK_ARRAY_LAST_INDEX) {
+					newRouteIndex = BLOCK_ARRAY_LAST_INDEX - 1;
+				}
+				if (newRouteIndex < 0) {
+					newRouteIndex = 1;
+				}
+				newRow[newRouteIndex] = true;
+				for (var i = 0; i < blockArrayWidth; i++) {
+					if (Math.random() > 0.8) {
+						newRow[i] = true;
+					}
+				}
+				lastRouteBlockIndex = newRouteIndex;
+				return newRow;
+			}
+
+				// Create game loop that is executed 50 times per second
+			var gameloop = new THREEx.PhysicsLoop(50);
+
 			function handleInput(delta){
 				//console.log('Handling input');
 				if (action.localeCompare("") == 0) // Is equal to
@@ -78,14 +108,15 @@
 						//player.rotation.x -= 0.1;
 					}
 				}
-			};
+			}
+
 			function alterState(delta){
 				//console.log('Altering game state');
 				if (action.localeCompare("") != 0) // Not equal to
 				{
 					if (action.localeCompare("JumpLeft") == 0)
 					{
-						if (playerPositionIndexX > 0 && playerPositionIndexY < blockArrayLegth - 1)
+						if (playerPositionIndexX > 0 && playerPositionIndexY < blockArrayLength - 1)
 						{
 							player.position.x -= blockDistance / jumpDuration;
 							player.position.z -= blockDistance / jumpDuration;
@@ -109,7 +140,7 @@
 					}
 					else if (action.localeCompare("JumpRight") == 0)
 					{
-						if (playerPositionIndexX < blockArrayWidth - 1 && playerPositionIndexY < blockArrayLegth - 1)
+						if (playerPositionIndexX < blockArrayWidth - 1 && playerPositionIndexY < blockArrayLength - 1)
 						{
 							player.position.x += blockDistance / jumpDuration; // Move left
 							player.position.z -= blockDistance / jumpDuration; // Move forward
@@ -150,7 +181,7 @@
 					//TODO add new row of logs
 					nextSpawnIn = spawnLogsInterval;
 				}
-			};
+			}
 
 			gameloop.add(handleInput);
 			gameloop.add(alterState);
@@ -159,7 +190,8 @@
 			var renderingloop = new THREEx.RenderingLoop();
 			function function2(delta){
 				//console.log('Rendering loop call');
-			};
+			}
+
 			renderingloop.add(function2);
 
 			camera.position.z = 5;
