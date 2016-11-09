@@ -53,18 +53,45 @@
 			var flowSpeed = 0.002;
 			var lastRouteBlockIndex = playerPositionIndexX;
 			var blocks = new Array(blockArrayLength);
+			var blockObjects = new Array(blockArrayLength);
 
 			blocks[0] = [false, false, false, false, false, false];
 			blocks[0][playerPositionIndexX] = true;
 			console.log(blocks[0]);
 			for (var i = 1; i < blockArrayLength; i++) {
 				blocks[i] = createRow();
+				blockObjects[i] = createBlockObjectRow(blocks[i], i);
 				console.log(blocks[i]);
 			}
 
 			// Add text
 			//var text = new THREEx.Text('THREEx');
 			// scene.add(text);
+
+			function createBlockObjectRow(row, offset){
+				var rowObjects = [false, false, false, false, false, false];
+				for (var i = 0; i < blockArrayWidth; i++) {
+					if (row[i] == true) {
+						var blockGeo = new THREE.BoxGeometry(blockDistance, blockDistance, blockDistance);
+						var blockMat = new THREE.MeshBasicMaterial({color: 0x994422});
+						var blockObj = new THREE.Mesh(blockGeo, blockMat);
+						blockObj.position.x = blockDistance * i - blockDistance * 3;
+						blockObj.position.y = playerInitialY - 1;
+						blockObj.position.z = -offset;
+						rowObjects[i] = blockObj;
+						scene.add(blockObj);
+					}
+				}
+				return rowObjects;
+			}
+
+			function removeBlockObjectRow(row){
+				for (var i = 0; i < blockArrayWidth; i++) {
+					if (row[i] != false) {
+						scene.remove(row[i]);
+					}
+				}
+			}
 
 			function createRow(){
 				newRow = [false, false, false, false, false, false];
@@ -172,15 +199,28 @@
 				// Move logs and player downwards in the stream
 				player.position.z += flowSpeed;
 				nextSpawnIn -= flowSpeed;
-				// TODO modify log positions by flowSpeed
+
+				for (var row = 1; row < blockArrayLength; row++) {
+					for (var pos = 0; pos < blockArrayWidth; pos++) {
+						if (blockObjects[row][pos] != false) {
+							blockObjects[row][pos].position.z += flowSpeed;
+						}
+					}
+				}
 
 				// If its time to destroy last row and add a new one
 				if (nextSpawnIn <= 0.0)
 				{
 					// Remove the first row of blocks and add a new one to the end
+					removeBlockObjectRow(blocks[0]);
+					blockObjects.shift();
 					blocks.shift();
-					blocks.push(createRow());
-					console.log(blocks[0]);
+
+					var new_row = createRow();
+					blocks.push(new_row);
+					blockObjects.push(createBlockObjectRow(new_row, blockArrayLength - 1));
+					console.log(new_row);
+
 					nextSpawnIn = spawnLogsInterval;
 				}
 			}
