@@ -177,8 +177,10 @@
 				// If its time to destroy last row and add a new one
 				if (nextSpawnIn <= 0.0)
 				{
-					//TODO remove last row of logs
-					//TODO add new row of logs
+					// Remove the first row of blocks and add a new one to the end
+					blocks.shift();
+					blocks.push(createRow());
+					console.log(blocks[0]);
 					nextSpawnIn = spawnLogsInterval;
 				}
 			}
