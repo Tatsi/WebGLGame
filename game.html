@@ -45,7 +45,7 @@
 			// Add game related constants
 			const LEVEL_WIDTH_INDEX = 5;
 			var blockArrayWidth = 6;
-			var blockArrayLegth = 10;
+			var blockArrayLength = 10;
 			var jumpDuration = 10;
 			var blockDistance = 0.5; // The distance between cells (=logs) in 3D scene
 			var spawnLogsInterval = 1.0;
@@ -105,7 +105,7 @@
 				{
 					if (action.localeCompare("JumpLeft") == 0)
 					{
-						if (playerPositionIndexX > 0 && playerPositionIndexY < blockArrayLegth - 1)
+						if (playerPositionIndexX > 0 && playerPositionIndexY < blockArrayLength - 1)
 						{
 							player.position.x -= blockDistance / jumpDuration;
 							player.position.z -= blockDistance / jumpDuration;
@@ -126,7 +126,7 @@
 					}
 					else if (action.localeCompare("JumpRight") == 0)
 					{
-						if (playerPositionIndexX < blockArrayWidth - 1 && playerPositionIndexY < blockArrayLegth - 1)
+						if (playerPositionIndexX < blockArrayWidth - 1 && playerPositionIndexY < blockArrayLength - 1)
 						{
 							player.position.x += blockDistance / jumpDuration; // Move left
 							player.position.z -= blockDistance / jumpDuration; // Move forward
