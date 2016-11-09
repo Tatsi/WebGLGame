@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset=utf-8>
-		<title>My first Three.js app</title>
+		<title>WebGL Test Game</title>
 		<style>
 			body { margin: 0; }
 			canvas { width: 100%; height: 100% }
@@ -43,6 +43,7 @@
 			
 
 			// Add game related constants
+			const LEVEL_WIDTH_INDEX = 5;
 			var blockArrayWidth = 6;
 			var blockArrayLegth = 10;
 			var jumpDuration = 10;
@@ -50,12 +51,32 @@
 			var spawnLogsInterval = 1.0;
 			var nextSpawnIn = spawnLogsInterval;
 
+			var lastRouteBlockIndex = playerPositionIndexX;
+
 			// Add text
 			//var text = new THREEx.Text('THREEx');
 			// scene.add(text);
 
-			// Create game loop that is executed 50 times per second
-			var gameloop = new THREEx.PhysicsLoop(50)
+			function createRow(){
+				newRow = [false, false, false, false, false, false];
+				newRouteIndex = lastRouteBlockIndex + (2 * Math.round(Math.random()) - 1);
+				if (newRouteIndex > LEVEL_WIDTH_INDEX) {
+					newRouteIndex = LEVEL_WIDTH_INDEX - 1;
+				}
+				if (newRouteIndex < 0) {
+					newRouteIndex = 1;
+				}
+				for (var i = 0; i < LEVEL_WIDTH_INDEX; i++) {
+					if (Math.random() > 0.8) {
+						newRow[i] = true;
+					}
+				}
+				return newRow;
+			}
+
+				// Create game loop that is executed 50 times per second
+			var gameloop = new THREEx.PhysicsLoop(50);
+
 			function handleInput(delta){
 				//console.log('Handling input');
 				if (action.localeCompare("") == 0) // Is equal to
@@ -76,7 +97,8 @@
 						//player.rotation.x -= 0.1;
 					}
 				}
-			};
+			}
+
 			function alterState(delta){
 				//console.log('Altering game state');
 				if (action.localeCompare("") != 0) // Not equal to
@@ -142,7 +164,7 @@
 					//TODO add new row of logs
 					nextSpawnIn = spawnLogsInterval;
 				}
-			};
+			}
 
 			gameloop.add(handleInput);
 			gameloop.add(alterState);
@@ -151,7 +173,8 @@
 			var renderingloop = new THREEx.RenderingLoop();
 			function function2(delta){
 				//console.log('Rendering loop call');
-			};
+			}
+
 			renderingloop.add(function2);
 
 			camera.position.z = 5;
