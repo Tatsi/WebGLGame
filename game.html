@@ -28,7 +28,8 @@
 			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
 			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 			var player = new THREE.Mesh( geometry, material );
-			player.position.y = -3;
+			var playerInitialY = -3;
+			player.position.y = playerInitialY;
 			scene.add( player );
 
 			// Add keyboard state object
@@ -46,6 +47,7 @@
 			var blockArrayWidth = 6;
 			var blockArrayLegth = 10;
 			var jumpDuration = 10;
+			var jump_height = 1.2;
 			var blockDistance = 0.5; // The distance between cells (=logs) in 3D scene
 			var spawnLogsInterval = 1.0;
 			var nextSpawnIn = spawnLogsInterval;
@@ -87,7 +89,10 @@
 						{
 							player.position.x -= blockDistance / jumpDuration;
 							player.position.z -= blockDistance / jumpDuration;
-							// TODO move upwards = jump
+							var x = 1.0 - actionDuration / jumpDuration;
+							var jump_pos = -4.0 * x * x + 4 * x;		
+							player.position.y = playerInitialY + jump_pos * jump_height;
+
 							actionDuration -= 1;
 
 							if (actionDuration == 0)
@@ -108,7 +113,10 @@
 						{
 							player.position.x += blockDistance / jumpDuration; // Move left
 							player.position.z -= blockDistance / jumpDuration; // Move forward
-							// TODO move upwards = jump
+							var x = 1.0 - actionDuration / jumpDuration;
+							var jump_pos = -4.0 * x * x + 4 * x;		
+							player.position.y = playerInitialY + jump_pos * jump_height;
+
 							actionDuration -= 1;
 
 							if (actionDuration == 0)
