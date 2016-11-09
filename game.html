@@ -24,21 +24,32 @@
 			//renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 
-			// Add a cube
+			// Add a player
 			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
 			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-			var cube = new THREE.Mesh( geometry, material );
-			cube.position.y = -3;
-			scene.add( cube );
+			var player = new THREE.Mesh( geometry, material );
+			player.position.y = -3;
+			scene.add( player );
 
 			// Add keyboard state object
 			var keyboard = new THREEx.KeyboardState();
 
 			// Add game related variables
 			var action = "";
-			var moveSpeedX = 1.0;
-			var rowIndex = 0;
-			var playerPosition = 3; // Between 0 and 5
+			var playerPositionIndexX = 3; // Between 0 and 5
+			var playerPositionIndexY = 0; // Between 0 and 9
+			var actionDuration = 0;
+			var flowSpeed = 0.002;
+			
+
+			// Add game related constants
+			var blockArrayWidth = 6;
+			var blockArrayLegth = 10;
+			var jumpDuration = 10;
+			var blockDistance = 0.5; // The distance between cells (=logs) in 3D scene
+			var spawnLogsInterval = 1.0;
+			var nextSpawnIn = spawnLogsInterval;
+
 			// Add text
 			//var text = new THREEx.Text('THREEx');
 			// scene.add(text);
@@ -54,13 +65,15 @@
 					{
 						action = "JumpLeft";
 						console.log('Left pressed!');
-						//cube.rotation.x += 0.1;
+						actionDuration = jumpDuration;
+						//player.rotation.x += 0.1;
 					}
 					if (keyboard.pressed("right"))
 					{
 						action = "JumpRight";
 						console.log('Right pressed!');
-						//cube.rotation.x -= 0.1;
+						actionDuration = jumpDuration;
+						//player.rotation.x -= 0.1;
 					}
 				}
 			};
@@ -70,14 +83,64 @@
 				{
 					if (action.localeCompare("JumpLeft") == 0)
 					{
-						cube.position.x = cube.position.x - moveSpeedX;
-						action = "";
+						if (playerPositionIndexX > 0 && playerPositionIndexY < blockArrayLegth - 1)
+						{
+							player.position.x -= blockDistance / jumpDuration;
+							player.position.z -= blockDistance / jumpDuration;
+							// TODO move upwards = jump
+							actionDuration -= 1;
+
+							if (actionDuration == 0)
+							{
+								playerPositionIndexX -= 1;
+								playerPositionIndexY += 1;
+								//TODO Handle "death" if there is no log in this cell
+							}
+						}
+						else
+						{
+							actionDuration = 0;
+						}
 					}
 					else if (action.localeCompare("JumpRight") == 0)
 					{
-						cube.position.x = cube.position.x + moveSpeedX;
-						action = "";
+						if (playerPositionIndexX < blockArrayWidth - 1 && playerPositionIndexY < blockArrayLegth - 1)
+						{
+							player.position.x += blockDistance / jumpDuration; // Move left
+							player.position.z -= blockDistance / jumpDuration; // Move forward
+							// TODO move upwards = jump
+							actionDuration -= 1;
+
+							if (actionDuration == 0)
+							{
+								playerPositionIndexX += 1;
+								playerPositionIndexY += 1;
+								//TODO Handle "death" if there is no log in this cell
+							}
+						}
+						else
+						{
+							actionDuration = 0;
+						}
 					}
+				}
+
+				if (actionDuration == 0)
+				{
+					action = "";
+				}
+
+				// Move logs and player downwards in the stream
+				player.position.z += flowSpeed;
+				nextSpawnIn -= flowSpeed;
+				// TODO modify log positions by flowSpeed
+
+				// If its time to destroy last row and add a new one
+				if (nextSpawnIn <= 0.0)
+				{
+					//TODO remove last row of logs
+					//TODO add new row of logs
+					nextSpawnIn = spawnLogsInterval;
 				}
 			};
 
