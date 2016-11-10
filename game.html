@@ -14,23 +14,19 @@
 		<!-- script src="js/threextext/fonts/<droi></droi>d/droid_serif_regular.typeface.js"></script -->
 		<script src='js/threexloop/threex.loop.js'></script>
 		<script src='js/threexkeyboardstate/threex.keyboardstate.js'></script>
+		<script src="js/ocean/water-material.js"></script>
 		<script>
 			// Init scene
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 75, 9 / 16, 0.1, 1000 );
+			//var camera = new THREE.PerspectiveCamera(55.0, 9 / 16, 0.5, 3000000);
 			// var camera = new THREE.PerspectiveCamera( 75, 0.5, 0.1, 1000 );
+			//camera.position.set(1000, 500, -1500);
+			//camera.lookAt(new THREE.Vector3(0, 0, 0));
 			var renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerHeight/16*9, window.innerHeight );
 			//renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
-
-			// Add a player
-			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-			var player = new THREE.Mesh( geometry, material );
-			var playerInitialY = -3;
-			player.position.y = playerInitialY;
-			scene.add( player );
 
 			// Add keyboard state object
 			var keyboard = new THREEx.KeyboardState();
@@ -64,9 +60,51 @@
 				console.log(blocks[i]);
 			}
 
+			// Add a player
+			var geometry = new THREE.BoxGeometry( blockDistance, blockDistance, blockDistance );
+			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			var player = new THREE.Mesh( geometry, material );
+			var playerInitialY = -3;
+			player.position.y = playerInitialY;
+			scene.add( player );
+
+			// Add light
+			var directionalLight = new THREE.DirectionalLight(0xffff55, 1);
+			directionalLight.position.set(0, 4, 0);
+			//directionalLight.position.set(-600, 300, 600);
+			scene.add(directionalLight);
+
+			// Add water
+			var loader = new THREE.TextureLoader();
+			var waterNormals = loader.load('js/ocean/waternormals.jpg');
+			//var waterNormals = new THREE.ImageUtils.loadTexture('js/ocean/waternormals.jpg')
+			waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping; 
+			var ms_Water = new THREE.Water(renderer, camera, scene, {
+				textureWidth: 256,
+				textureHeight: 256,
+				waterNormals: waterNormals,
+				alpha: 	1.0,
+				sunDirection: directionalLight.position.normalize(),
+				sunColor: 0xffffff,
+				waterColor: 0x001e0f,
+				betaVersion: 0,
+				side: THREE.DoubleSide
+			});
+			var aMeshMirror = new THREE.Mesh(
+				new THREE.PlaneBufferGeometry(2, 2, 10, 10), 
+				ms_Water.material.texture
+			);
+			aMeshMirror.add(ms_Water);
+			 
+			aMeshMirror.rotation.x = - Math.PI * 0.5;	
+			aMeshMirror.position.y = -3.0;	
+			scene.add(aMeshMirror);
+			// For some reason water rendering does not work
+
 			// Add text
-			//var text = new THREEx.Text('THREEx');
+			// var text = new THREEx.Text('Hello');
 			// scene.add(text);
+			// TODO Adding text with the imported THREEx library does not work
 
 			function createBlockObjectRow(row, offset){
 				var rowObjects = [false, false, false, false, false, false];
@@ -76,7 +114,7 @@
 						var blockMat = new THREE.MeshBasicMaterial({color: 0x994422});
 						var blockObj = new THREE.Mesh(blockGeo, blockMat);
 						blockObj.position.x = blockDistance * i - blockDistance * 3;
-						blockObj.position.y = playerInitialY - 1;
+						blockObj.position.y = playerInitialY - blockDistance;
 						blockObj.position.z = -offset;
 						rowObjects[i] = blockObj;
 						scene.add(blockObj);
@@ -112,7 +150,7 @@
 				return newRow;
 			}
 
-				// Create game loop that is executed 50 times per second
+			// Create game loop that is executed 50 times per second
 			var gameloop = new THREEx.PhysicsLoop(50);
 
 			function handleInput(delta){
@@ -125,19 +163,18 @@
 						action = "JumpLeft";
 						console.log('Left pressed!');
 						actionDuration = jumpDuration;
-						//player.rotation.x += 0.1;
 					}
 					if (keyboard.pressed("right"))
 					{
 						action = "JumpRight";
 						console.log('Right pressed!');
 						actionDuration = jumpDuration;
-						//player.rotation.x -= 0.1;
 					}
 				}
 			}
 
 			function alterState(delta){
+				ms_Water.material.uniforms.time.value += 1.0 / 50.0;
 				//console.log('Altering game state');
 				if (action.localeCompare("") != 0) // Not equal to
 				{
@@ -156,7 +193,7 @@
 							{
 								playerPositionIndexX -= 1;
 								playerPositionIndexY += 1;
-								//TODO Handle "death" if there is no log in this cell
+								// TODO Handle "death" if there is no log in this cell
 							}
 						}
 						else
@@ -180,7 +217,7 @@
 							{
 								playerPositionIndexX += 1;
 								playerPositionIndexY += 1;
-								//TODO Handle "death" if there is no log in this cell
+								// TODO Handle "death" if there is no log in this cell
 							}
 						}
 						else
@@ -240,6 +277,7 @@
 			// Render loop
 			function render() {
 				requestAnimationFrame( render );
+				ms_Water.render();
 				renderer.render( scene, camera );
 			}
 			
