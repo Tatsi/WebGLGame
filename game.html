@@ -123,7 +123,6 @@
 							var x = 1.0 - actionDuration / jumpDuration;
 							var jump_pos = -4.0 * x * x + 4 * x;		
 							player.position.y = playerInitialY + jump_pos * jump_height;
-
 							actionDuration -= 1;
 
 							if (actionDuration == 0)
