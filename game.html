@@ -63,6 +63,8 @@
 			var blocks = new Array(blockArrayLength);
 			var blockObjects = new Array(blockArrayLength);
 
+			var gameInitialization = 0;
+
 			// Example model load. Is not added to scene.
 			var mtlLoader = new THREE.MTLLoader();
 			mtlLoader.setPath( 'models/rock/' );
@@ -85,21 +87,29 @@
 					// add the object to the scene
 					//scene.add(object);
 				} );
-			});	
+			});
 
 
-			//blocks[0] = [false, false, false, false, false, false];
-			//blocks[0][playerPositionIndexX] = true;
-			//console.log(blocks[0]);
-			for (var i = 0; i < blockArrayLength; i++) {
-				blocks[i] = createRow();
-				if (i == playerPositionIndexY)
-				{
-					blocks[i][playerPositionIndexX] = true;
-				}
-				blockObjects[i] = createBlockObjectRow(blocks[i], i);
-				//console.log(blocks[i]);
-			}
+			// Create a rock object that is then cloned when needed
+			var rockObject = null;
+
+			var rockLoader = new THREE.MTLLoader();
+			rockLoader.setPath( 'models/rock/' );
+			rockLoader.load( 'rock.mtl', function( materials ) {
+				materials.preload();
+				var objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials( materials );
+				objLoader.setPath( 'models/rock/' );
+				objLoader.load( 'rock.obj', function ( object ) {
+					var boundingBox = new THREE.Box3().setFromObject(object);
+					var size = boundingBox.getSize();
+					object.scale.divideScalar(3.5);
+
+					rockObject = object;
+					gameInitialization = 1;
+				} );
+			} );
+
 
 			// Add a player
 			var geometry = new THREE.BoxGeometry( blockDistance, blockDistance, blockDistance );
@@ -154,44 +164,92 @@
 			// scene.add(text);
 			// TODO Adding text with the imported THREEx library does not work
 
+			initializeRocks();
+
+			startGame();
+
+
+			function initializeRocks(){
+				if (gameInitialization < 1) {
+					setTimeout(initializeRocks, 50);
+					return;
+				}
+				//blocks[0] = [false, false, false, false, false, false];
+				//blocks[0][playerPositionIndexX] = true;
+				//console.log(blocks[0]);
+				for (var i = 0; i < blockArrayLength; i++) {
+					blocks[i] = createRow();
+					if (i == playerPositionIndexY) {
+						blocks[i][playerPositionIndexX] = true;
+					}
+					blockObjects[i] = createBlockObjectRow(blocks[i], i);
+					//console.log(blocks[i]);
+				}
+				gameInitialization = 2;
+			}
+
+
+			function startGame() {
+				if (gameInitialization < 2) {
+					setTimeout(startGame, 50);
+					return;
+				}
+
+				// Create game loop that is executed 50 times per second
+				var gameloop = new THREEx.PhysicsLoop(50);
+
+				gameloop.add(handleInput);
+				gameloop.add(alterState);
+
+				//Create speed up loop
+				var speedUpLoop = new THREEx.PhysicsLoop(1);
+				speedUpLoop.add(SpeedUp);
+
+				// Start loops
+				gameloop.start();
+				speedUpLoop.start();
+
+				render();
+			}
+
+
+			function getRockObject(){
+				if (gameInitialization < 1) {
+					setTimeout(getRockObject, 50);
+					return;
+				}
+				var newRock = rockObject.clone();
+
+				newRock.rotation.x = Math.random() * 6.0;
+				newRock.rotation.z = Math.random() * 6.0;
+
+				return newRock;
+			}
+
+
 			function createBlockObjectRow(row, offset){
 				var rowObjects = [false, false, false, false, false, false];
 
-				var mtlLoader = new THREE.MTLLoader();
-				mtlLoader.setPath( 'models/rock/' );
-				mtlLoader.load( 'rock.mtl', function( materials ) {
-					materials.preload();
-					var objLoader = new THREE.OBJLoader();
-					objLoader.setMaterials( materials );
-					objLoader.setPath( 'models/rock/' );
-					objLoader.load( 'rock.obj', function ( object ) {
-						var boundingBox	= new THREE.Box3().setFromObject(object);
-						var size = boundingBox.getSize();
-						object.scale.divideScalar(3.5);
+				for (var i = 0; i < blockArrayWidth; i++) {
+					if (row[i] == true) {
+						var blockObj = getRockObject();
 
-						for (var i = 0; i < blockArrayWidth; i++) {
-							if (row[i] == true) {
-								var blockObj = object.clone();
+						blockObj.position.x = blockDistance * i - blockDistance * 3;
+						blockObj.position.y = -3.0 - blockDistance;
+						blockObj.position.z = -offset * blockDistance;
 
-								blockObj.position.x = blockDistance * i - blockDistance * 3;
-								blockObj.position.y = -3.0 - blockDistance;
-								blockObj.position.z = -offset * blockDistance;
-								blockObj.rotation.x = Math.random() * 6.0;
-								blockObj.rotation.z = Math.random() * 6.0;
-								rowObjects[i] = blockObj;
-								scene.add(blockObj);
-							}
-						}	
-					} );
-				});	
+						rowObjects[i] = blockObj;
+						scene.add(blockObj);
+					}
+				}
 
 				return rowObjects;
 			}
 
 
 			function createRow(){
-				newRow = [false, false, false, false, false, false];
-				newRouteIndex = lastRouteBlockIndex + (2 * Math.round(Math.random()) - 1);
+				var newRow = [false, false, false, false, false, false];
+				var newRouteIndex = lastRouteBlockIndex + (2 * Math.round(Math.random()) - 1);
 				if (newRouteIndex > BLOCK_ARRAY_LAST_INDEX) {
 					newRouteIndex = BLOCK_ARRAY_LAST_INDEX - 1;
 				}
@@ -208,8 +266,6 @@
 				return newRow;
 			}
 
-			// Create game loop that is executed 50 times per second
-			var gameloop = new THREEx.PhysicsLoop(50);
 
 			function die()
 			{
@@ -218,6 +274,7 @@
 				//alert("You died!");
 				document.getElementById("timer").innerHTML = "You died after " + time.toFixed(1) + " seconds.";
 			}
+
 
 			function leftPressed()
 			{
@@ -229,6 +286,7 @@
 				}
 			}
 
+
 			function rightPressed()
 			{
 				if (action.localeCompare("") == 0) // Is equal to
@@ -238,6 +296,8 @@
 					actionDuration = jumpDuration;
 				}
 			}
+
+
 			function restart()
 			{
 				window.location.reload(false); 
@@ -250,6 +310,7 @@
 			//btn.appendChild(t);                                // Append the text to <button>
 			//document.body.appendChild(btn);
 
+
 			function handleInput(delta){
 				console.log('Handling input');
 				if (keyboard.pressed("left"))
@@ -261,6 +322,7 @@
 					rightPressed();
 				}
 			}
+
 
 			function alterState(delta){
 				if (action.localeCompare("Die") != 0)
@@ -386,17 +448,12 @@
 				}
 			}
 
-			gameloop.add(handleInput);
-			gameloop.add(alterState);
 
-			//Create speed up loop
-			var speedUpLoop = new THREEx.PhysicsLoop(1);
 			function SpeedUp()
 			{
 				flowSpeed *= speedUpMultiplier;
 				//spawnLogsInterval = 1.0 / speedUpMultiplier * spawnLogsInterval;
 			}
-			speedUpLoop.add(SpeedUp);
 
 
 			// Render loop
@@ -407,11 +464,6 @@
 				renderer.render( scene, camera );
 			}
 			
-			// Start loops
-			gameloop.start();
-			speedUpLoop.start();
-
-			render();
 		</script>
 		<button id="leftButton" onclick="leftPressed()">Left</button>
 		<button id="rightButton" onclick="rightPressed()">Right</button>
