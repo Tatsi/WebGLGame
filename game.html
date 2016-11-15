@@ -65,26 +65,34 @@
 
 			var gameInitialization = 0;
 
+			// Load audio
+			var sound_jump = new Audio('sounds/jump.mp3');
+			var sound_die = new Audio('sounds/die.mp3');
+			
+
 			// Example model load. Is not added to scene.
 			var mtlLoader = new THREE.MTLLoader();
-			mtlLoader.setPath( 'models/rock/' );
-			mtlLoader.load( 'rock.mtl', function( materials ) {
+			mtlLoader.setPath( 'models/char/' );
+			mtlLoader.load( 'char.mtl', function( materials ) {
 
 				materials.preload();
 				mat = materials;
 				var objLoader = new THREE.OBJLoader();
 				objLoader.setMaterials( materials );
-				objLoader.setPath( 'models/rock/' );
-				objLoader.load( 'rock.obj', function ( object ) {
+				objLoader.setPath( 'models/char/' );
+				objLoader.load( 'char.obj', function ( object ) {
 					// normalize the scale
 					var boundingBox	= new THREE.Box3().setFromObject(object);
 					var size = boundingBox.getSize();
 					var scaleScalar	= Math.max(size.x, Math.max(size.y, size.z));
-					object.scale.divideScalar(scaleScalar);
+					//object.scale.divideScalar(scaleScalar);
+					object.scale.divideScalar(2.0);
 					// normalize the position
-					var boundingBox	= new THREE.Box3().setFromObject(object);
-					object.position.copy( boundingBox.getCenter().negate() );
+					//var boundingBox	= new THREE.Box3().setFromObject(object);
+					//object.position.copy( boundingBox.getCenter().negate() );
 					// add the object to the scene
+					object.position.z = -2.0;
+					object.position.y = 1.0;
 					//scene.add(object);
 				} );
 			});
@@ -271,6 +279,7 @@
 			{
 				action = "Die";
 				actionDuration = deathDuration;
+				sound_die.play();
 				//alert("You died!");
 				document.getElementById("timer").innerHTML = "You died after " + time.toFixed(1) + " seconds.";
 			}
@@ -282,6 +291,7 @@
 				{
 					action = "JumpLeft";
 					//console.log('Left pressed!');
+					sound_jump.play();
 					actionDuration = jumpDuration;
 				}
 			}
@@ -292,6 +302,7 @@
 				if (action.localeCompare("") == 0) // Is equal to
 				{
 					action = "JumpRight";
+					sound_jump.play();
 					//console.log('Right pressed!');
 					actionDuration = jumpDuration;
 				}
@@ -412,6 +423,7 @@
 				// Move logs and player downwards in the stream
 				player.position.z += flowSpeed;
 				nextSpawnIn -= flowSpeed;
+				//mirrorMesh.position.z += flowSpeed;
 
 				for (var row = 1; row < blockArrayLength; row++) {
 					for (var pos = 0; pos < blockArrayWidth; pos++) {
