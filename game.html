@@ -49,7 +49,7 @@
 			var spawnLogsInterval = 1.0;
 			var nextSpawnIn = blockDistance;
 			const BLOCK_ARRAY_LAST_INDEX = blockArrayWidth - 1;
-			const speedUpMultiplier = 1.05;
+			const speedUpMultiplier = 1.01;
 
 			// Add game related variables
 			var time = 0.0;
@@ -58,7 +58,7 @@
 			var playerPositionIndexX = 3; // Between 0 and 5
 			var playerPositionIndexY = 3; // Between 0 and 19
 			var actionDuration = 0;
-			var flowSpeed = 0.01;
+			var flowSpeed = 0.015;
 			var lastRouteBlockIndex = playerPositionIndexX;
 			var blocks = new Array(blockArrayLength);
 			var blockObjects = new Array(blockArrayLength);
