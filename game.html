@@ -49,7 +49,7 @@
 			var spawnLogsInterval = 1.0;
 			var nextSpawnIn = blockDistance;
 			const BLOCK_ARRAY_LAST_INDEX = blockArrayWidth - 1;
-			const speedUpMultiplier = 1.01;
+			const speedUpMultiplier = 1.05;
 
 			// Add game related variables
 			var time = 0.0;
@@ -291,7 +291,7 @@
 				{
 					action = "JumpLeft";
 					//console.log('Left pressed!');
-					sound_jump.play();
+					//sound_jump.play();
 					actionDuration = jumpDuration;
 				}
 			}
@@ -361,8 +361,10 @@
 
 							if (actionDuration == 0)
 							{
+								
 								playerPositionIndexX -= 1;
 								playerPositionIndexY += 1;
+								//player.position.z = - playerPositionIndexY * blockDistance;
 								if (Boolean(blockObjects[playerPositionIndexY][playerPositionIndexX]) == false ||
 								playerPositionIndexX < 0)
 								{
@@ -392,6 +394,7 @@
 							{
 								playerPositionIndexX += 1;
 								playerPositionIndexY += 1;
+								//player.position.z = - playerPositionIndexY * blockDistance;
 								if (Boolean(blockObjects[playerPositionIndexY][playerPositionIndexX]) == false ||
 								playerPositionIndexX > blockArrayWidth - 1)
 								{
