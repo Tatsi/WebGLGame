@@ -1,0 +1,72 @@
+canvas {
+    position:absolute;
+    z-index: 1;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+	height: 100%;
+}
+
+#timer {
+    position:absolute;
+    z-index: 2;
+    top: 0px;
+    left: 0px;
+    text-align: center;
+    color: greenyellow;
+    font-size: 150%;
+}
+
+#leftButton {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    width: 40%;
+    height: 10%;
+    position:absolute;
+    z-index: 2;
+    left: 0px;
+    bottom: 10px;
+}
+
+#rightButton {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    width: 40%;
+    height: 10%;
+    position:absolute;
+    z-index: 2;
+    right: 0px;
+    bottom: 10px;
+}
+#restartButton {
+    background-color: orangered; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    width: 40%;
+    height: 10%;
+    position:absolute;
+    z-index: 2;
+    right: 0px;
+    top: 0px;
+}
+
+body {
+	margin: 0;
+}
