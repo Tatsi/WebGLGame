@@ -366,6 +366,9 @@
 								playerPositionIndexX -= 1;
 								playerPositionIndexY += 1;
 								//player.position.z = - playerPositionIndexY * blockDistance;
+								if (blockObjects[playerPositionIndexY][playerPositionIndexX] != false) {
+									player.position.z = blockObjects[playerPositionIndexY][playerPositionIndexX].position.z;
+								}
 								if (Boolean(blockObjects[playerPositionIndexY][playerPositionIndexX]) == false ||
 								playerPositionIndexX < 0)
 								{
@@ -396,6 +399,9 @@
 								playerPositionIndexX += 1;
 								playerPositionIndexY += 1;
 								//player.position.z = - playerPositionIndexY * blockDistance;
+								if (blockObjects[playerPositionIndexY][playerPositionIndexX] != false) {
+									player.position.z = blockObjects[playerPositionIndexY][playerPositionIndexX].position.z;
+								}
 								if (Boolean(blockObjects[playerPositionIndexY][playerPositionIndexX]) == false ||
 								playerPositionIndexX > blockArrayWidth - 1)
 								{
