@@ -355,6 +355,7 @@
 						{
 							player.position.x -= blockDistance / jumpDuration;
 							player.position.z -= blockDistance / jumpDuration;
+							//player.position.z = - playerPositionIndexY * blockDistance - blockDistance * (jumpDuration - actionDuration) / jumpDuration;
 							var x = 1.0 - actionDuration / jumpDuration;
 							var jump_pos = -4.0 * x * x + 4 * x;		
 							player.position.y = playerInitialY + jump_pos * jump_height;
@@ -364,8 +365,7 @@
 							{
 								
 								playerPositionIndexX -= 1;
-								playerPositionIndexY += 1;
-								//player.position.z = - playerPositionIndexY * blockDistance;
+								playerPositionIndexY += 1;		
 								if (Boolean(blockObjects[playerPositionIndexY][playerPositionIndexX]) == false ||
 								playerPositionIndexX < 0)
 								{
@@ -385,6 +385,7 @@
 
 							player.position.x += blockDistance / jumpDuration; // Move left
 							player.position.z -= blockDistance / jumpDuration; // Move forward
+							//player.position.z = - playerPositionIndexY * blockDistance - blockDistance * (jumpDuration - actionDuration) / jumpDuration;
 							var x = 1.0 - actionDuration / jumpDuration;
 							var jump_pos = -4.0 * x * x + 4 * x;		
 							player.position.y = playerInitialY + jump_pos * jump_height;
@@ -395,7 +396,6 @@
 							{
 								playerPositionIndexX += 1;
 								playerPositionIndexY += 1;
-								//player.position.z = - playerPositionIndexY * blockDistance;
 								if (Boolean(blockObjects[playerPositionIndexY][playerPositionIndexX]) == false ||
 								playerPositionIndexX > blockArrayWidth - 1)
 								{
