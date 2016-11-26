@@ -19,6 +19,7 @@
 	<script src="js/WaterShader.js"></script>
 	<script src='js/OBJLoader.js'></script>
 	<script src='js/MTLLoader.js'></script>
+	<script src="js/Stats.js"></script>
 	<script>
 			// Notes. It was difficult to load models as three.js has changed and available examples and
 			// helper libraries are using old specifications.
@@ -179,6 +180,9 @@
 
 			//Create speed up loop
 			var speedUpLoop = new THREEx.PhysicsLoop(1);
+
+			stats = new Stats();
+			document.body.appendChild( stats.domElement );
 
 			startGame();
 
@@ -480,10 +484,16 @@
 
 			// Render loop
 			function render() {
-				requestAnimationFrame( render );
+				stats.begin();
 
 				water.render();
 				renderer.render( scene, camera );
+
+				stats.end();
+
+				requestAnimationFrame( render );
+
+				stats.update();
 			}
 			
 		</script>
