@@ -49,7 +49,7 @@
 			var spawnLogsInterval = 1.0;
 			var nextSpawnIn = blockDistance;
 			const BLOCK_ARRAY_LAST_INDEX = blockArrayWidth - 1;
-			const speedUpMultiplier = 1.05;
+			const speedUpMultiplier = 1.03;
 
 			// Add game related variables
 			var time = 0.0;
@@ -366,6 +366,9 @@
 								
 								playerPositionIndexX -= 1;
 								playerPositionIndexY += 1;		
+								if (blockObjects[playerPositionIndexY][playerPositionIndexX] != false) {
+									player.position.z = blockObjects[playerPositionIndexY][playerPositionIndexX].position.z;
+								}
 								if (Boolean(blockObjects[playerPositionIndexY][playerPositionIndexX]) == false ||
 								playerPositionIndexX < 0)
 								{
@@ -396,6 +399,10 @@
 							{
 								playerPositionIndexX += 1;
 								playerPositionIndexY += 1;
+								//player.position.z = - playerPositionIndexY * blockDistance;
+								if (blockObjects[playerPositionIndexY][playerPositionIndexX] != false) {
+									player.position.z = blockObjects[playerPositionIndexY][playerPositionIndexX].position.z;
+								}
 								if (Boolean(blockObjects[playerPositionIndexY][playerPositionIndexX]) == false ||
 								playerPositionIndexX > blockArrayWidth - 1)
 								{
