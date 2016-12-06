@@ -11,7 +11,7 @@ canvas {
     position:absolute;
     z-index: 2;
     top: 0px;
-    left: 0px;
+    left: 100px;
     text-align: center;
     color: greenyellow;
     font-size: 150%;
@@ -69,4 +69,10 @@ canvas {
 
 body {
 	margin: 0;
+}
+
+#stats {
+    position: absolute;
+    top: 0px;
+    left: 0px;
 }

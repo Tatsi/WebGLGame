@@ -19,6 +19,7 @@
 	<script src="js/WaterShader.js"></script>
 	<script src='js/OBJLoader.js'></script>
 	<script src='js/MTLLoader.js'></script>
+	<script src="js/Stats.js"></script>
 	<script>
 			// Notes. It was difficult to load models as three.js has changed and available examples and
 			// helper libraries are using old specifications.
@@ -49,7 +50,7 @@
 			var spawnLogsInterval = 1.0;
 			var nextSpawnIn = blockDistance;
 			const BLOCK_ARRAY_LAST_INDEX = blockArrayWidth - 1;
-			const speedUpMultiplier = 1.03;
+			const speedUpMultiplier = 1.01;
 
 			// Add game related variables
 			var time = 0.0;
@@ -58,7 +59,7 @@
 			var playerPositionIndexX = 3; // Between 0 and 5
 			var playerPositionIndexY = 3; // Between 0 and 19
 			var actionDuration = 0;
-			var flowSpeed = 0.01;
+			var flowSpeed = 0.015;
 			var lastRouteBlockIndex = playerPositionIndexX;
 			var blocks = new Array(blockArrayLength);
 			var blockObjects = new Array(blockArrayLength);
@@ -179,6 +180,9 @@
 
 			//Create speed up loop
 			var speedUpLoop = new THREEx.PhysicsLoop(1);
+
+			stats = new Stats();
+			document.body.appendChild( stats.domElement );
 
 			startGame();
 
@@ -481,10 +485,12 @@
 
 			// Render loop
 			function render() {
-				requestAnimationFrame( render );
-
 				water.render();
 				renderer.render( scene, camera );
+
+				requestAnimationFrame( render );
+
+				stats.update();
 			}
 			
 		</script>
